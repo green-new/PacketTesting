@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 #include "serializer.hpp"
 #include "packet.hpp"
 #include "buffer.hpp"
@@ -96,25 +97,74 @@ int packet_test() {
 
 int buffer_test() {
     net::ByteBuffer buf{};
+	
+	struct butter {
+		int64_t amount;
+		std::string brand;
+	};
+	
+	struct potato {
+		uint32_t size;
+		butter* b;
+	};
 
-    buf.put<short>(12).put<long long>(32).put<unsigned int>(2).put<int>(-1231).put<float>(123.123f);
+	struct feast {
+		uint8_t apple;
+		uint16_t pumpkin;
+		uint32_t gourd;
+		uint64_t chicken;
+		float onion;
+		double orange;
+		void* potato;
+		bool delicious;
+	};
+	
+    buf
+		.put<short>(12) // No short suffix
+		.put(32LL)
+		.put(2U)
+		.put(-1231U)
+		.put(123.123f)
+		.put(feast { 
+			1, 2, 3, 4, 5.5, 6.6, (void*)(new potato { 
+				12, new butter { 
+					300, std::string("butter")
+				} 
+			}), true
+		});
     short a;
     long long b;
     unsigned int c;
     int d;
     float e;
+	feast f;
     buf.flip();
-    buf.get(a).get(b).get(c).get(d).get(e);
+    buf.get(a).get(b).get(c).get(d).get(e).get(f);
 
-    std::cout << std::dec << "a: " << a << ", b: " << b << ", c: " << c << ", d: " << d << '\n';
+    std::cout << std::dec << "a: " << a << ", b: " << b << ", c: " << c << ", d: " << d << ", e: " << e << '\n';
+	std::cout << "feast: ";
+	std::cout << "\tapple: " << +f.apple << '\n';
+	std::cout << "\tpumpkin: " << f.pumpkin << '\n';
+	std::cout << "\tgourd: " << f.gourd << '\n';
+	std::cout << "\tchicken: " << f.chicken << '\n';
+	std::cout << "\tonion: " << f.onion << '\n';
+	std::cout << "\torange: " << f.orange << '\n';
+	std::cout << "\tpotato: " << f.potato << '\n';
+	std::cout << "\t\tsize: " << ((potato*)f.potato)->size << '\n';
+	std::cout << "\t\tbudder: " << ((potato*)f.potato)->b << '\n';
+	std::cout << "\t\t\tamount: " << ((potato*)f.potato)->b->amount << '\n';
+	std::cout << "\t\t\tbrand: " << ((potato*)f.potato)->b->brand << '\n';
+	std::cout << "\tdelicious: " << f.delicious << '\n';
 
     return 0;
 }
 
-int main(int argc, char** argv) {
+int main(void) {
     int ret = 0;
-    ret = packet_test();
+    // ret = packet_test();
     ret = buffer_test();
+
+	std::cout << "Program completed" << '\n';
 
     return ret;
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <execution>
 #include <memory>
 #include <thread>
 #include <mutex>
@@ -21,8 +23,6 @@
 #include <utility>
 
 namespace net {
-    constexpr std::size_t max_read = 8U * 1024U;
-    constexpr size_t max_bytes = 4U * 1024U;
     using byte_type = uint8_t;
     using bytes = std::vector<byte_type>;
 }

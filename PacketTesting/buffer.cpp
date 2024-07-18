@@ -2,13 +2,22 @@
 
 using namespace net;
 
-void ByteBuffer::flip() {
+void byte_buffer::flip() {
 	m_cursor = 0;
 }
-void ByteBuffer::clear() {
+void byte_buffer::clear() {
 	m_cursor = 0;
 	m_data.clear();
 }
-const std::vector<net::byte_type>& ByteBuffer::data() const {
+size_t byte_buffer::size() const {
+	return m_data.size();
+}
+bool byte_buffer::empty() const {
+	return m_data.empty();
+}
+const bytes& byte_buffer::data() const {
 	return m_data;
+}
+const byte_type* byte_buffer::data() const {
+	return m_data.data();
 }

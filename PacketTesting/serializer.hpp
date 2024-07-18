@@ -5,7 +5,7 @@ namespace net {
 
 	template<class Serializable>
 	struct DszPair {
-		DszPair(Serializable& object, ByteBuffer& output)
+		DszPair(Serializable& object, byte_buffer& output)
 			: m_object(object), m_output(output) { }
 		DszPair(const DszPair<Serializable>& copy) = delete;
 		DszPair& operator=(const DszPair<Serializable>& copy) = delete;
@@ -14,12 +14,12 @@ namespace net {
 		~DszPair() = default;
 
 		Serializable& m_object;
-		ByteBuffer& m_output;
+		byte_buffer& m_output;
 	};
 
 	template<class Serializable>
 	struct SzPair {
-		SzPair(const Serializable& object, ByteBuffer& output)
+		SzPair(const Serializable& object, byte_buffer& output)
 			: m_object(object), m_output(output) { }
 		SzPair(const SzPair<Serializable>& copy) = delete;
 		SzPair& operator=(const SzPair<Serializable>& copy) = delete;
@@ -28,18 +28,19 @@ namespace net {
 		~SzPair() = default;
 
 		const Serializable& m_object;
-		ByteBuffer& m_output;
+		byte_buffer& m_output;
 	};
+	// Remove Serializable, one func type alias, should be template instead, not runtime std function. policy pattern for sz and dsz.
+	template<class Serializable>
+	using SzFunc = std::function<void(const Serializable&, byte_buffer&)>;
 
 	template<class Serializable>
-	using SzFunc = std::function<void(const Serializable&, ByteBuffer&)>;
-
-	template<class Serializable>
-	using DszFunc = std::function<void(Serializable&, ByteBuffer&)>;
+	using DszFunc = std::function<void(Serializable&, byte_buffer&)>;
 
 	class SzFuncGroupRoot {
 	public:
 		virtual ~SzFuncGroupRoot() = default;
+		// move serialize and desz to here as interface
 	};
 
 	template<class Serializable>
@@ -51,8 +52,12 @@ namespace net {
 			: m_serializationFunc(std::move(s)), m_deserializationFunc(std::move(ds)) { }
 		~SzFuncGroup() = default;
 	public:
-		inline void serialize(SzPair<Serializable>&& pair) { m_serializationFunc(pair.m_object, pair.m_output); }
-		inline void deserialize(DszPair<Serializable>&& pair) { m_deserializationFunc(pair.m_object, pair.m_output); }
+		void serialize(SzPair<Serializable>&& pair) { 
+			m_serializationFunc(pair.m_object, pair.m_output); 
+		}
+		void deserialize(DszPair<Serializable>&& pair) { 
+			m_deserializationFunc(pair.m_object, pair.m_output);
+		}
 	private:
 		SzFunc<Serializable> m_serializationFunc;
 		DszFunc<Serializable> m_deserializationFunc;
@@ -72,13 +77,13 @@ namespace net {
 			m_functors.insert({ typeid(Serializable), std::make_shared<SzFuncGroup<Serializable>>(serializeFunction, deserializeFunction) });
 		}
 		template<class Serializable>
-		static void serialize(const Serializable& object, ByteBuffer& output) {
+		static void serialize(const Serializable& object, byte_buffer& output) {
 			std::type_index tn = typeid(Serializable);
 			assert(m_functors.find(tn) != m_functors.end() && "Serializer for type does not exist");
 			std::static_pointer_cast<SzFuncGroup<Serializable>>(m_functors[tn])->serialize(SzPair(object, output));
 		}
 		template<class Serializable>
-		static void deserialize(Serializable& object, ByteBuffer& output) {
+		static void deserialize(Serializable& object, byte_buffer& output) {
 			std::type_index tn = typeid(Serializable);
 			assert(m_functors.find(tn) != m_functors.end() && "Deserializer for type does not exist");
 			std::static_pointer_cast<SzFuncGroup<Serializable>>(m_functors[tn])->deserialize(DszPair(object, output));

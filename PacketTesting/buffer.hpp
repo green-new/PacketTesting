@@ -91,7 +91,7 @@ namespace net {
 		* @param policy The execution to policy to use. Default is std::execution::sequenced_policy.
 		*/
 		template<class UnaryFunc, class ExecutionPolicy>
-		constexpr UnaryFunc for_each(UnaryFunc f, ExecutionPolicy&& policy = std::execution::sequenced_policy) {
+		constexpr UnaryFunc for_each(UnaryFunc f, ExecutionPolicy&& policy = std::execution::seq) {
 			std::for_each(policy, m_data.begin(), m_data.end(), f);
 		}
 		/**

@@ -10,6 +10,11 @@ namespace net {
 	class Packet {
 	public:
 		/**
+		* Instantiates an empty packet with no type.
+		*/
+		Packet() 
+			: m_packet() { }
+		/**
 		* Instantiates a type erased T.
 		* @tparam T The type to erase.
 		*/
@@ -47,16 +52,16 @@ namespace net {
 			PacketModel(const T& model) 
 				: m_object(model) { }
 			/**
-			* Calls the type's serialization method from Serializer.
+			* Calls the type's serialization method from serializer.
 			*/
 			void serialize(byte_buffer& out) override {
-				net::Serializer::serialize<T>(m_object, out);
+				net::serializer::serialize<T>(m_object, out);
 			}
 			/**
-			* Calls the type's deserialization method from Serializer.
+			* Calls the type's deserialization method from serializer.
 			*/
 			void deserialize(byte_buffer& in) override {
-				net::Serializer::deserialize<T>(m_object, in);
+				net::serializer::deserialize<T>(m_object, in);
 			}
 		private:
 			/**
@@ -64,12 +69,15 @@ namespace net {
 			*/
 			T m_object;
 		};
+	/** 
+	* Modifiers
+	*/
 	public:
 		void serialize(byte_buffer& out) {
-			p.m_packet->serialize(out);
+			m_packet->serialize(out);
 		}
 		void deserialize(byte_buffer& in) {
-			p.m_packet->deserialize(in);
+			m_packet->deserialize(in);
 		}
 	private:
 		std::shared_ptr<PacketConcept> m_packet;
@@ -105,7 +113,7 @@ namespace net {
 	public:
 		static void init() {
 			// Allow net::Packet to be serialized/deserialized from the underlying type (if its defined).
-			net::Serializer::bind<net::Packet>(net::Packet::serialize, net::Packet::deserialize);
+			net::serializer::bind<net::Packet>(net::Packet::serialize, net::Packet::deserialize);
 		}
 		template<class PacketType>
 		static void bind(const PacketEnums& id) {
@@ -114,7 +122,7 @@ namespace net {
 		static net::Packet create(net::byte_buffer& in) {
 			PacketEnums userPacketId = m_packetHandler(in);
 			net::Packet packet = (m_factories[userPacketId])->create();
-			net::Serializer::deserialize(packet, in);
+			net::serializer::deserialize(packet, in);
 			return packet;
 		}
 		// Register the user defined packet handler. Runtime function used to determine what packet to create.

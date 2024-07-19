@@ -40,7 +40,6 @@ namespace net {
 	class SzFuncGroupRoot {
 	public:
 		virtual ~SzFuncGroupRoot() = default;
-		// move serialize and desz to here as interface
 	};
 
 	template<class Serializable>
@@ -62,33 +61,45 @@ namespace net {
 		SzFunc<Serializable> m_serializationFunc;
 		DszFunc<Serializable> m_deserializationFunc;
 	};
-
-	class Serializer {
-	public:
-		Serializer() = delete;
-		Serializer(const Serializer& copy) = delete;
-		Serializer& operator=(const Serializer& copy) = delete;
-		Serializer(Serializer&& move) = delete;
-		Serializer& operator=(Serializer&& move) = delete;
-		~Serializer() = default;
-	public:
-		template<class Serializable>
-		static void bind(SzFunc<Serializable> serializeFunction, DszFunc<Serializable> deserializeFunction) {
-			m_functors.insert({ typeid(Serializable), std::make_shared<SzFuncGroup<Serializable>>(serializeFunction, deserializeFunction) });
+	
+	namespace serializer {
+		inline size_t s_next_type_id{};
+		inline std::unordered_map<int, std::shared_ptr<SzFuncGroupRoot>> s_functors{};
+		
+		template<typename T>
+		inline size_t get_type_id() {
+			static int type_id = s_next_type_id++;
+			return type_id;
 		}
+		
 		template<class Serializable>
-		static void serialize(const Serializable& object, byte_buffer& output) {
-			std::type_index tn = typeid(Serializable);
-			assert(m_functors.find(tn) != m_functors.end() && "Serializer for type does not exist");
-			std::static_pointer_cast<SzFuncGroup<Serializable>>(m_functors[tn])->serialize(SzPair(object, output));
+		inline void bind(SzFunc<Serializable> szFunc, DszFunc<Serializable> dszFunc) {
+			s_functors.insert({ get_type_id<Serializable>(), std::make_shared<SzFuncGroup<Serializable>>(szFunc, dszFunc) });
 		}
+		
 		template<class Serializable>
-		static void deserialize(Serializable& object, byte_buffer& output) {
-			std::type_index tn = typeid(Serializable);
-			assert(m_functors.find(tn) != m_functors.end() && "Deserializer for type does not exist");
-			std::static_pointer_cast<SzFuncGroup<Serializable>>(m_functors[tn])->deserialize(DszPair(object, output));
+		inline byte_buffer serialize(const Serializable& object) {
+			byte_buffer b{};
+			serialize(std::forward(object), b);
+			return b;
 		}
-	private:
-		inline static std::unordered_map<std::type_index, std::shared_ptr<SzFuncGroupRoot>> m_functors{};
-	};
+		
+		template<class Serializable>
+		inline void serialize(const Serializable& object, byte_buffer& output) {
+			std::static_pointer_cast<SzFuncGroup<Serializable>>(s_functors[get_type_id<Serializable>()])->serialize(SzPair(object, output));
+		}
+		
+		template<class Serializable>
+		inline Serializable deserialize(byte_buffer& input) {
+			Serializable s{};
+			deserialize(s, input);
+			return s;
+		}
+		
+		template<class Serializable>
+		inline void deserialize(Serializable& object, byte_buffer& input) {
+			std::static_pointer_cast<SzFuncGroup<Serializable>>(s_functors[get_type_id<Serializable>()])->deserialize(DszPair(object, input));
+		}
+		
+	}
 }

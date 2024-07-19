@@ -91,13 +91,13 @@ namespace net {
 		* @param policy The execution to policy to use. Default is std::execution::sequenced_policy.
 		*/
 		template<class UnaryFunc, class ExecutionPolicy>
-		UnaryFunc for_each(UnaryFunc f, ExecutionPolicy&& policy = std::execution::sequenced_policy) constexpr {
+		constexpr UnaryFunc for_each(UnaryFunc f, ExecutionPolicy&& policy = std::execution::sequenced_policy) {
 			std::for_each(policy, m_data.begin(), m_data.end(), f);
 		}
 		/**
 		* Get a const reference to the internal byte buffer. C qualfied, noexcept.
 		*/
-		const bytes& data() const noexcept;
+		const bytes& array() const noexcept;
 		/**
 		* Get the pointer to the first element of the buffer. C qualified, noexcept.
 		*/

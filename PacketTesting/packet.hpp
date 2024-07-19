@@ -69,7 +69,7 @@ namespace net {
 			p.m_packet->serialize(out);
 		}
 		void deserialize(byte_buffer& in) {
-			p.m_packet->deserialize(out);
+			p.m_packet->deserialize(in);
 		}
 	private:
 		std::shared_ptr<PacketConcept> m_packet;

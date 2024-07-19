@@ -21,6 +21,7 @@
 #include <typeindex>
 #include <type_traits>
 #include <utility>
+#include <functional>
 
 namespace net {
     using byte_type = uint8_t;

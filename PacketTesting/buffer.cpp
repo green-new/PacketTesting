@@ -15,9 +15,9 @@ size_t byte_buffer::size() const {
 bool byte_buffer::empty() const {
 	return m_data.empty();
 }
-const bytes& byte_buffer::data() const {
+const bytes& byte_buffer::data() const noexcept {
 	return m_data;
 }
-const byte_type* byte_buffer::data() const {
+const byte_type* byte_buffer::data() const noexcept {
 	return m_data.data();
 }

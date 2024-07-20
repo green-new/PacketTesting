@@ -55,6 +55,7 @@ namespace net {
 			* Calls the type's serialization method from serializer.
 			*/
 			void serialize(byte_buffer& out) override {
+				// We are now tightly coupled with 'serializer', which could be better I think...
 				net::serializer::serialize<T>(m_object, out);
 			}
 			/**

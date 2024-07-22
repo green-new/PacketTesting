@@ -10,7 +10,7 @@
 #include <optional>
 #include <vector>
 #include <iostream>
-#include <algorithm>
+#include <type_traits>
 #include <chrono>
 #include <cstdint>
 #include <cstring>

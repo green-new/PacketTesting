@@ -90,9 +90,10 @@ namespace net {
 		* @param f The algorithm to use.
 		* @param policy The execution to policy to use. Default is std::execution::sequenced_policy.
 		*/
-		template<class UnaryFunc, class ExecutionPolicy>
-		constexpr UnaryFunc for_each(UnaryFunc f, ExecutionPolicy&& policy = std::execution::seq) {
-			std::for_each(policy, m_data.begin(), m_data.end(), f);
+		template<class UnaryFunc>
+		constexpr UnaryFunc for_each(UnaryFunc f) {
+			std::for_each(m_data.cbegin(), m_data.cend(), f);
+			return f;
 		}
 		/**
 		* Get a const reference to the internal byte buffer. C qualfied, noexcept.

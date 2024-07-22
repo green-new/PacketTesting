@@ -74,11 +74,16 @@ namespace net {
 	* Modifiers
 	*/
 	public:
-		void serialize(byte_buffer& out) {
-			m_packet->serialize(out);
+		static void serialize(const Packet& in, byte_buffer& out) {
+			in.m_packet->serialize(out);
 		}
-		void deserialize(byte_buffer& in) {
-			m_packet->deserialize(in);
+		static void deserialize(Packet& out, byte_buffer& in) {
+			out.m_packet->deserialize(in);
+		}
+	/** Capacity */
+	public:
+		bool empty() const {
+			return !m_packet;
 		}
 	private:
 		std::shared_ptr<PacketConcept> m_packet;

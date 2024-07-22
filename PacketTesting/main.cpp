@@ -87,9 +87,6 @@ int packet_test() {
 
     // Print serialization
     std::cout << std::hex;
-    for (const net::bytes::value_type& c : ser.data()) {
-        std::cout << "0x" << +c << " ";
-    }
 	ser.for_each([](uint8_t byte) { std::cout << "0x" << +byte << " "; });
 	
     std::cout << '\n';
@@ -163,7 +160,7 @@ int buffer_test() {
 
 int main(void) {
     int ret = 0;
-    // ret = packet_test();
+    ret = packet_test();
     ret = buffer_test();
 
 	std::cout << "Program completed" << '\n';

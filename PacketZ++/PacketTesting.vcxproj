@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f74d2842-bd41-4819-8973-c25133b659a0}</ProjectGuid>
+    <ProjectGuid>{0E047FEE-A92C-475B-A1DB-539560CB3154}</ProjectGuid>
     <RootNamespace>PacketTesting</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>PacketZ++</ProjectName>

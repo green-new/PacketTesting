@@ -1,8 +1,9 @@
+#include <array>
 #include <iostream>
 #include <cassert>
-#include "serializer.hpp"
-#include "packet.hpp"
-#include "buffer.hpp"
+#include "./../PacketTesting/serializer.hpp"
+#include "./../PacketTesting/packet.hpp"
+#include "./../PacketTesting/buffer.hpp"
 
 struct my_special_packet2 {
     uint16_t m_id{};
@@ -21,7 +22,7 @@ struct my_special_packet2 {
         d.get(p.m_id);
         d.get(p.m_length);
         for (int i = 0; i < 8; i++) {
-             d.get(p.m_data[i]);
+            d.get(p.m_data[i]);
         }
     }
 };
@@ -87,8 +88,8 @@ int packet_test() {
 
     // Print serialization
     std::cout << std::hex;
-	ser.for_each([](uint8_t byte) { std::cout << "0x" << +byte << " "; });
-	
+    ser.for_each([](uint8_t byte) { std::cout << "0x" << +byte << " "; });
+
     std::cout << '\n';
 
     return 0;
@@ -96,64 +97,64 @@ int packet_test() {
 
 int buffer_test() {
     net::byte_buffer buf{};
-	
-	struct butter {
-		int64_t amount;
-		std::string brand;
-	};
-	
-	struct potato {
-		uint32_t size;
-		butter* b;
-	};
 
-	struct feast {
-		uint8_t apple;
-		uint16_t pumpkin;
-		uint32_t gourd;
-		uint64_t chicken;
-		float onion;
-		double orange;
-		void* potato;
-		bool delicious;
-	};
-	
+    struct butter {
+        int64_t amount;
+        std::string brand;
+    };
+
+    struct potato {
+        uint32_t size;
+        butter* b;
+    };
+
+    struct feast {
+        uint8_t apple;
+        uint16_t pumpkin;
+        uint32_t gourd;
+        uint64_t chicken;
+        float onion;
+        double orange;
+        void* potato;
+        bool delicious;
+    };
+
     buf
-		.put<short>(12) // No short suffix
-		.put(32LL)
-		.put(2U)
-		.put(-1231U)
-		.put(123.123f)
-		.put(feast { 
-			1, 2, 3, 4, 5.5, 6.6, (void*)(new potato { 
-				12, new butter { 
-					300, std::string("butter")
-				} 
-			}), true
-		});
+        .put<short>(12) // No short suffix
+        .put(32LL)
+        .put(2U)
+        .put(-1231)
+        .put(123.123f)
+        .put(feast{
+            1, 2, 3, 4, 5.5, 6.6, (void*)(new potato {
+                12, new butter {
+                    300, std::string("butter")
+                }
+            }), true
+            });
     short a;
     long long b;
     unsigned int c;
     int d;
     float e;
-	feast f;
+    feast f;
     buf.flip();
     buf.get(a).get(b).get(c).get(d).get(e).get(f);
 
     std::cout << std::dec << "a: " << a << ", b: " << b << ", c: " << c << ", d: " << d << ", e: " << e << '\n';
-	std::cout << "feast: ";
-	std::cout << "\tapple: " << +f.apple << '\n';
-	std::cout << "\tpumpkin: " << f.pumpkin << '\n';
-	std::cout << "\tgourd: " << f.gourd << '\n';
-	std::cout << "\tchicken: " << f.chicken << '\n';
-	std::cout << "\tonion: " << f.onion << '\n';
-	std::cout << "\torange: " << f.orange << '\n';
-	std::cout << "\tpotato: " << f.potato << '\n';
-	std::cout << "\t\tsize: " << ((potato*)f.potato)->size << '\n';
-	std::cout << "\t\tbudder: " << ((potato*)f.potato)->b << '\n';
-	std::cout << "\t\t\tamount: " << ((potato*)f.potato)->b->amount << '\n';
-	std::cout << "\t\t\tbrand: " << ((potato*)f.potato)->b->brand << '\n';
-	std::cout << "\tdelicious: " << f.delicious << '\n';
+    std::cout << "feast: ";
+    std::cout << "\tapple: " << +f.apple << '\n';
+    std::cout << "\tpumpkin: " << f.pumpkin << '\n';
+    std::cout << "\tgourd: " << f.gourd << '\n';
+    std::cout << "\tchicken: " << f.chicken << '\n';
+    std::cout << "\tonion: " << f.onion << '\n';
+    std::cout << "\torange: " << f.orange << '\n';
+    std::cout << "\tpotato: " << f.potato << '\n';
+    std::cout << "\t\tsize: " << ((potato*)f.potato)->size << '\n';
+    std::cout << "\t\tbudder: " << ((potato*)f.potato)->b << '\n';
+    std::cout << "\t\t\tamount: " << ((potato*)f.potato)->b->amount << '\n';
+    std::cout << "\t\t\tbrand: " << ((potato*)f.potato)->b->brand << '\n';
+    std::cout << "\tdelicious: " << f.delicious << '\n';
 
     return 0;
 }
@@ -163,7 +164,7 @@ int main(void) {
     ret = packet_test();
     ret = buffer_test();
 
-	std::cout << "Program completed" << '\n';
+    std::cout << "Program completed" << '\n';
 
     return ret;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include "def.hpp"
 
 namespace net {
@@ -8,14 +9,12 @@ namespace net {
 	* Stores bytes as a buffer that can be inserted into or extracted from.
 	*/
 	class byte_buffer {
-	/* Class methods. */
 	public:
 		/**
 		* Default ctor.
 		*/
 		byte_buffer()
 			: m_data(), m_cursor() { }
-	/* Modifiers. */
 	public:		
 		/**
 		* Puts a POD type into the byte buffer based on its byte representation.
@@ -64,7 +63,6 @@ namespace net {
 		* Flips the buffer, and clears the buffer.
 		*/
 		void clear();
-	/* Capacity. */
 	public:
 		/**
 		* Size of the buffer. C qualified.
@@ -78,7 +76,6 @@ namespace net {
 		* @returns Whether this buffer is empty or nonempty.
 		*/
 		bool empty() const;
-	/* Access. */
 	public:
 		/**
 		* Runs a user provided UnaryFunc algorithm for each element in the buffer.

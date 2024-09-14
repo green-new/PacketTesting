@@ -1,6 +1,9 @@
 #pragma once
 #include "def.hpp"
 #include "buffer.hpp"
+#include <unordered_map>
+#include <functional>
+
 namespace net {
 
 	template<class Serializable>
@@ -64,11 +67,11 @@ namespace net {
 	
 	namespace serializer {
 		inline size_t s_next_type_id{};
-		inline std::unordered_map<int, std::shared_ptr<SzFuncGroupRoot>> s_functors{};
+		inline std::unordered_map<size_t, std::shared_ptr<SzFuncGroupRoot>> s_functors{};
 		
 		template<typename T>
 		inline size_t get_type_id() {
-			static int type_id = s_next_type_id++;
+			static size_t type_id = s_next_type_id++;
 			return type_id;
 		}
 		
